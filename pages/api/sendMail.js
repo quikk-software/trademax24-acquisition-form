@@ -130,7 +130,7 @@ async function sendViaNodemailerAndReturnInfo(container) {
             : ``
         }
         <tr>
-            <td>Gerät funktioniert?</td>
+            <td>Zustand</td>
             <td>${container.condition}</td>
         </tr>
         <tr>
@@ -195,8 +195,8 @@ async function sendViaNodemailerAndReturnInfo(container) {
     `;
 
   let info = await transporter.sendMail({
-    from: `"TradeMax24 Ankaufformular" <${process.env.MAIL_USER}>`,
-    to: "joyce@quikk.de",
+    from: `"TradeMax24 Ankaufformular" <${container.email}>`,
+    to: "info@trademax24.de",
     subject: "Es liegt eine neue Ankaufanfrage vor",
     text: text,
     html: html,

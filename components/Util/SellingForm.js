@@ -18,6 +18,7 @@ import Alert from "@material-ui/lab/Alert";
 import Axios from "axios";
 import { Devices } from "../../data/Devices";
 import DropzoneDialog from "../Dialogs/DropzoneDialog";
+import validator from "validator";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -59,6 +60,7 @@ const SellingForm = ({ id, name, model }) => {
   const [openDataSnackbar, setOpenDataSnackbar] = new useState(false);
   const [openEmailSnackbar, setOpenEmailSnackbar] = new useState(false);
   const [openErrorSnackbar, setOpenErrorSnackbar] = new useState(false);
+  const [openInvalidEmailSnackbar, setOpenInvalidEmailSnackbar] = new useState(false);
   const [equipment, setEquipment] = new useState({
     ovp: false,
     mouse: false,
@@ -166,38 +168,43 @@ const SellingForm = ({ id, name, model }) => {
     setOpenDataSnackbar(false);
     setOpenEmailSnackbar(false);
     setOpenErrorSnackbar(false);
+    setOpenInvalidEmailSnackbar(false);
   };
 
   const validateFormAndSend = () => {
     if (surname && name && email && dataSecurity) {
-      setClicked(true);
-      const modelname = model.model;
-      const dataObject = {
-        id,
-        _id,
-        name,
-        condition,
-        modelname,
-        size,
-        displayType,
-        processor,
-        graphics,
-        ram,
-        drive,
-        driveType,
-        deviceOperating,
-        displayOperating,
-        batteryOperating,
-        magsafeAvaible,
-        equipment,
-        message,
-        dataSecurity,
-        surname,
-        lastname,
-        email,
-        telefon,
-      };
-      sendMailAndPushDataToMongoDb(dataObject);
+      if(validator.isEmail(email)) {
+        setClicked(true);
+        const modelname = model.model;
+        const dataObject = {
+          id,
+          _id,
+          name,
+          condition,
+          modelname,
+          size,
+          displayType,
+          processor,
+          graphics,
+          ram,
+          drive,
+          driveType,
+          deviceOperating,
+          displayOperating,
+          batteryOperating,
+          magsafeAvaible,
+          equipment,
+          message,
+          dataSecurity,
+          surname,
+          lastname,
+          email,
+          telefon,
+        };
+        sendMailAndPushDataToMongoDb(dataObject);
+      } else {
+        setOpenInvalidEmailSnackbar(true);
+      }
     } else {
       setOpenDataSnackbar(true);
     }
@@ -234,6 +241,16 @@ const SellingForm = ({ id, name, model }) => {
           Sie es später erneut.
         </Alert>
       </Snackbar>
+      <Snackbar
+        open={openInvalidEmailSnackbar}
+        autoHideDuration={5000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert onClose={handleCloseSnackbar} severity="error">
+          {`Die von Ihnen angegebene E-Mail ${email} ist ungültig.`} 
+        </Alert>
+      </Snackbar>
+      
       {firstPage ? (
         <div className="specswrapper">
           <h1 className="formheadline">{model.model}</h1>
